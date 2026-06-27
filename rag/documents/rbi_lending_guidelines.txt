@@ -1,0 +1,46 @@
+RBI Master Circular — Prudential Norms on Income Recognition, Asset Classification and Provisioning
+Updated: July 2024
+
+SECTION 1 — CREDIT SCORE REQUIREMENTS
+1.1 Minimum credit score for retail loan approval: 650 (CIBIL scale 300-900)
+1.2 Credit scores between 650-699: Requires additional income verification and collateral assessment.
+1.3 Credit scores between 700-749: Standard approval process applicable. Enhanced monitoring recommended.
+1.4 Credit scores 750 and above: Eligible for preferential interest rates. Expedited processing permitted.
+1.5 Credit scores below 650: Application must be referred to senior underwriter. Rejection recommended unless strong mitigating factors exist.
+1.6 No credit history: Minimum 2 years of banking relationship required before loan consideration.
+
+SECTION 2 — DEBT-TO-INCOME RATIO (DTI)
+2.1 Maximum permissible DTI ratio for salaried applicants: 50% of gross monthly income.
+2.2 Maximum permissible DTI ratio for self-employed applicants: 45% of average monthly income over 3 years.
+2.3 DTI calculation must include all existing EMIs, credit card minimum payments, and proposed new EMI.
+2.4 DTI between 40-50%: Application classified as elevated risk. Additional scrutiny required.
+2.5 DTI above 50%: Application must be rejected unless secured by high-value collateral equal to 150% of loan value.
+2.6 For home loans: Housing expense ratio (proposed EMI / gross income) must not exceed 35%.
+
+SECTION 3 — EMPLOYMENT AND INCOME VERIFICATION
+3.1 Salaried applicants: Minimum 2 years total work experience required. Minimum 6 months with current employer.
+3.2 Recent job change (less than 6 months): Additional verification required. Offer letter and previous employer confirmation mandatory.
+3.3 Self-employed applicants: Minimum 3 years of business existence. ITR for last 3 years mandatory.
+3.4 Freelance/Gig workers: Average income over 24 months to be considered. 20% income haircut applied.
+3.5 Income from multiple sources: Only regular, recurring income to be included. One-time receipts excluded.
+3.6 Applicants with employment gap exceeding 6 months in past 2 years: Flag for manual review.
+
+SECTION 4 — LOAN-TO-VALUE AND LOAN-TO-INCOME
+4.1 Maximum loan-to-value (LTV) for home loans: 80% of property value.
+4.2 Maximum loan-to-income ratio: 5x annual gross income for home loans.
+4.3 Loan-to-income ratio between 4x-5x: Elevated risk category. Stricter monitoring.
+4.4 For loan amounts above ₹50 lakhs: Independent property valuation mandatory.
+4.5 For loan amounts above ₹1 crore: Two independent valuations required.
+
+SECTION 5 — AGE CRITERIA
+5.1 Minimum age: 21 years at loan origination.
+5.2 Maximum age: 65 years at loan origination. Loan tenure must end before age 75.
+5.3 Applicants above 60: Retirement income or pension documentation required if tenure extends beyond retirement age.
+
+SECTION 6 — FRAUD PREVENTION GUIDELINES
+6.1 Address verification: Physical verification mandatory for loans above ₹10 lakhs.
+6.2 Income document verification: Bank statement analysis for last 12 months mandatory.
+6.3 Multiple loan applications: Flag if applicant has applied at 3 or more institutions in past 90 days.
+6.4 Declared income vs bank deposits: Variance exceeding 25% requires explanation.
+6.5 Employer verification: Direct employer confirmation required for loans above ₹25 lakhs.
+6.6 Red flags for fraud: Frequent large cash withdrawals, round-number deposits, salary credits irregular in timing.

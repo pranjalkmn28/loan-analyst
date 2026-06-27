@@ -1,0 +1,6 @@
+# .gitignore
+.env
+rag/chroma_db/
+__pycache__/
+*.pyc
+*.egg-info/

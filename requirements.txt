@@ -1,0 +1,12 @@
+langchain
+langchain-groq
+langchain-core
+langchain-community
+langgraph
+langfuse
+chromadb
+sentence-transformers
+django
+pydantic
+python-dotenv
+gunicorn

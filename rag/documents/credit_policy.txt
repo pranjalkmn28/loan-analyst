@@ -1,0 +1,69 @@
+Internal Credit Policy — Retail Lending Division
+Version 3.2 | Effective April 2024
+
+PART A — RISK CLASSIFICATION FRAMEWORK
+
+A.1 RISK SCORING MODEL
+Risk Score 0-30 (Low Risk):
+- Credit score 750+
+- DTI below 30%
+- Employment stability 5+ years
+- No adverse credit history
+- Decision: APPROVE with standard terms
+
+Risk Score 31-55 (Medium Risk):
+- Credit score 680-749
+- DTI 30-45%
+- Employment 2-5 years
+- Minor credit blemishes acceptable
+- Decision: CONDITIONAL_APPROVE — may require co-applicant or higher down payment
+
+Risk Score 56-75 (High Risk):
+- Credit score 650-679
+- DTI 45-50%
+- Employment less than 2 years or recent change
+- Some adverse history
+- Decision: REFER_TO_UNDERWRITER for manual review
+
+Risk Score 76-100 (Critical Risk):
+- Credit score below 650
+- DTI above 50%
+- Unstable employment
+- Adverse credit history or fraud indicators
+- Decision: REJECT
+
+PART B — SPECIFIC PRODUCT RULES (HOME LOANS)
+
+B.1 Minimum down payment: 20% of property value.
+B.2 Maximum tenure: 30 years or until age 75, whichever is earlier.
+B.3 Prepayment penalty: None for floating rate loans per RBI directive.
+B.4 Co-applicant requirement: Mandatory if primary applicant DTI exceeds 40%.
+B.5 Insurance: Home loan protection plan mandatory for loans above ₹30 lakhs.
+
+PART C — FRAUD INDICATORS AND ESCALATION
+
+C.1 AUTOMATIC REJECTION TRIGGERS:
+- Forged documents (verified)
+- Identity mismatch across documents
+- Blacklisted employer or address
+- Previous loan fraud record
+
+C.2 MANUAL REVIEW TRIGGERS:
+- Salary structure change in last 6 months exceeding 50%
+- Multiple applications across lenders in 90-day window
+- Business address same as residential address (self-employed)
+- Round number salary (e.g. exactly ₹50,000, ₹1,00,000) — possible fabrication
+
+C.3 INCOME INCONSISTENCY FLAGS:
+- Bank credits lower than declared salary by more than 20%
+- Irregular salary credit dates (varies by more than 5 days)
+- Salary credits from unknown or shell entities
+- Cash salary claims without supporting documentation
+
+PART D — DECISION AUTHORITY MATRIX
+
+D.1 Loan amount up to ₹25 lakhs: Branch credit officer authority.
+D.2 Loan amount ₹25-75 lakhs: Regional credit manager authority.
+D.3 Loan amount above ₹75 lakhs: Credit committee approval required.
+D.4 All CONDITIONAL_APPROVE decisions: Minimum 2 officer sign-off required.
+D.5 All REFER_TO_UNDERWRITER decisions: 5-day SLA for underwriter response.
