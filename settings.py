@@ -28,5 +28,6 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "urls"
+WSGI_APPLICATION = "wsgi.application"
 DATABASES    = {}
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
