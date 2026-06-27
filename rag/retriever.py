@@ -11,7 +11,7 @@ WHY k=6:
 """
 
 from pathlib import Path
-from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
 
 CHROMA_DIR = Path(__file__).parent / "chroma_db"
