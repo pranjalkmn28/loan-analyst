@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Analyst — AI Credit Assessment</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg:          #0a0a0a;
+            --surface:     #141414;
+            --surface-2:   #1c1c1c;
+            --surface-3:   #252525;
+            --border:      rgba(255,255,255,0.08);
+            --border-mid:  rgba(255,255,255,0.12);
+            --text:        #e8e8e8;
+            --text-dim:    #a0a0a0;
+            --text-muted:  #606060;
+            --accent:      #4f8ef7;
+            --accent-dim:  rgba(79,142,247,0.12);
+            --accent-glow: rgba(79,142,247,0.06);
+
+            --green:       #22c55e;
+            --green-dim:   rgba(34,197,94,0.10);
+            --green-border:rgba(34,197,94,0.22);
+            --yellow:      #eab308;
+            --yellow-dim:  rgba(234,179,8,0.10);
+            --yellow-border:rgba(234,179,8,0.22);
+            --orange:      #f97316;
+            --orange-dim:  rgba(249,115,22,0.10);
+            --orange-border:rgba(249,115,22,0.22);
+            --red:         #ef4444;
+            --red-dim:     rgba(239,68,68,0.10);
+            --red-border:  rgba(239,68,68,0.22);
+
+            --r-sm:  6px;
+            --r:     10px;
+            --r-lg:  14px;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── Scrollbar ───────────────────────────────────── */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.14); }
+
+        /* ── Header ──────────────────────────────────────── */
+        .header {
+            padding: 0 28px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(14,14,14,0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .header-logo {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, var(--accent), #7c6bff);
+            border-radius: 7px;
+            display: grid;
+            place-items: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .header-brand {
+            font-size: 14px;
+            font-weight: 650;
+            letter-spacing: -0.02em;
+        }
+
+        .header-sep {
+            width: 1px;
+            height: 18px;
+            background: var(--border);
+            margin: 0 2px;
+        }
+
+        .header-sub {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .header-pill {
+            margin-left: auto;
+            font-size: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 500;
+            padding: 3px 9px;
+            border-radius: 20px;
+            background: var(--accent-dim);
+            color: var(--accent);
+            border: 1px solid rgba(79,142,247,0.18);
+            letter-spacing: 0.04em;
+        }
+
+        /* ── Main 2-col grid ────────────────────────────── */
+        .main {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            min-height: calc(100vh - 56px);
+        }
+
+        /* ── Panels ──────────────────────────────────────── */
+        .panel-form {
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-results {
+            background: #0d0d0d;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-head {
+            padding: 20px 24px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .panel-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* ── Preset buttons ──────────────────────────────── */
+        .presets { display: flex; gap: 6px; }
+
+        .preset-btn {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 11px;
+            font-weight: 500;
+            padding: 4px 10px;
+            border-radius: var(--r-sm);
+            border: 1px solid var(--border);
+            background: var(--surface-2);
+            color: var(--text-dim);
+            cursor: pointer;
+            transition: border-color 0.15s, color 0.15s, background 0.15s;
+            white-space: nowrap;
+        }
+
+        .preset-btn:hover {
+            border-color: rgba(79,142,247,0.4);
+            color: var(--accent);
+            background: var(--accent-dim);
+        }
+
+        .preset-btn.strong:hover { border-color: var(--green-border); color: var(--green); background: var(--green-dim); }
+        .preset-btn.risky:hover  { border-color: var(--red-border);   color: var(--red);   background: var(--red-dim); }
+
+        /* ── Form ────────────────────────────────────────── */
+        .form-body {
+            padding: 20px 24px 24px;
+            flex: 1;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            column-gap: 14px;
+            row-gap: 14px;
+        }
+
+        .form-section {
+            grid-column: 1 / -1;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding-top: 16px;
+            margin-top: 4px;
+            border-top: 1px solid var(--border);
+        }
+
+        .form-section:first-child { border-top: none; padding-top: 0; margin-top: 0; }
+
+        .fg { display: flex; flex-direction: column; gap: 5px; }
+        .fg.full { grid-column: 1 / -1; }
+
+        label {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-dim);
+            letter-spacing: 0.01em;
+        }
+
+        input, select, textarea {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            color: var(--text);
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: var(--r-sm);
+            padding: 8px 11px;
+            width: 100%;
+            outline: none;
+            appearance: none;
+            -webkit-appearance: none;
+            transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+        }
+
+        input::placeholder, textarea::placeholder { color: var(--text-muted); }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: rgba(79,142,247,0.5);
+            background: var(--accent-glow);
+            box-shadow: 0 0 0 3px rgba(79,142,247,0.06);
+        }
+
+        input[type="number"] { -moz-appearance: textfield; }
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button { opacity: 0.3; }
+
+        select {
+            cursor: pointer;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M5 6L0 0h10z' fill='%23606060'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 11px center;
+            padding-right: 30px;
+        }
+
+        select option { background: #1c1c1c; }
+
+        textarea {
+            resize: vertical;
+            min-height: 68px;
+            max-height: 130px;
+            line-height: 1.55;
+        }
+
+        /* ── Submit ──────────────────────────────────────── */
+        .submit-wrap { padding: 0 24px 24px; }
+
+        .submit-btn {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            background: var(--accent);
+            border: none;
+            border-radius: var(--r-sm);
+            padding: 11px 18px;
+            width: 100%;
+            cursor: pointer;
+            letter-spacing: -0.01em;
+            transition: background 0.15s, transform 0.12s, opacity 0.15s;
+            position: relative;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            background: #6ba1ff;
+            transform: translateY(-1px);
+        }
+
+        .submit-btn:active:not(:disabled) { transform: translateY(0); }
+
+        .submit-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+        /* ── Empty state ─────────────────────────────────── */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            gap: 10px;
+            color: var(--text-muted);
+            text-align: center;
+            padding: 48px 32px;
+        }
+
+        .empty-icon { font-size: 36px; opacity: 0.25; }
+
+        .empty-title {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-dim);
+        }
+
+        .empty-desc { font-size: 13px; max-width: 260px; line-height: 1.6; }
+
+        /* ── Loading ─────────────────────────────────────── */
+        .loading-wrap {
+            padding: 32px 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+
+        .loading-head { display: flex; flex-direction: column; gap: 6px; }
+
+        .loading-title { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; }
+
+        .loading-elapsed {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 30px;
+            font-weight: 600;
+            color: var(--accent);
+            letter-spacing: -0.03em;
+        }
+
+        .loading-status {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* ── Pipeline ────────────────────────────────────── */
+        .pipeline { display: flex; flex-direction: column; }
+
+        .p-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            position: relative;
+        }
+
+        .p-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 14px;
+            top: 36px;
+            bottom: -2px;
+            width: 2px;
+            background: var(--border);
+            transition: background 0.4s;
+        }
+
+        .p-step.done::after { background: rgba(79,142,247,0.25); }
+
+        .p-ind {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 1.5px solid var(--border);
+            background: var(--surface-2);
+            display: grid;
+            place-items: center;
+            font-size: 11px;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-muted);
+            flex-shrink: 0;
+            position: relative;
+            z-index: 1;
+            transition: border-color 0.3s, background 0.3s, color 0.3s;
+        }
+
+        .p-step.active .p-ind {
+            border-color: var(--accent);
+            background: var(--accent-dim);
+            color: var(--accent);
+            animation: ping 1.4s ease-in-out infinite;
+        }
+
+        .p-step.done .p-ind {
+            border-color: var(--green);
+            background: var(--green-dim);
+            color: var(--green);
+        }
+
+        @keyframes ping {
+            0%   { box-shadow: 0 0 0 0 rgba(79,142,247,0.35); }
+            70%  { box-shadow: 0 0 0 7px rgba(79,142,247,0); }
+            100% { box-shadow: 0 0 0 0 rgba(79,142,247,0); }
+        }
+
+        .p-body { padding: 4px 0 24px; }
+
+        .p-name { font-size: 13px; font-weight: 500; margin-bottom: 5px; }
+
+        .p-desc {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .p-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+
+        .p-tag {
+            font-size: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 500;
+            padding: 3px 9px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            background: var(--surface-3);
+            transition: border-color 0.3s, color 0.3s, background 0.3s;
+        }
+
+        .p-step.active .p-tag {
+            border-color: rgba(79,142,247,0.35);
+            color: var(--accent);
+            background: var(--accent-dim);
+        }
+
+        .p-step.done .p-tag {
+            border-color: var(--green-border);
+            color: var(--green);
+            background: var(--green-dim);
+        }
+
+        /* ── Results ─────────────────────────────────────── */
+        .results {
+            padding: 24px 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            animation: slideIn 0.35s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── Decision banner ─────────────────────────────── */
+        .decision-banner {
+            border-radius: var(--r-lg);
+            padding: 20px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            border: 1px solid;
+        }
+
+        .db-approve    { background: var(--green-dim);  border-color: var(--green-border);  }
+        .db-conditional{ background: var(--yellow-dim); border-color: var(--yellow-border); }
+        .db-reject     { background: var(--red-dim);    border-color: var(--red-border);    }
+        .db-refer      { background: var(--orange-dim); border-color: var(--orange-border); }
+
+        .db-left { display: flex; flex-direction: column; gap: 3px; }
+
+        .db-sublabel {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.09em;
+            color: var(--text-muted);
+        }
+
+        .db-decision {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .db-approve    .db-decision { color: var(--green); }
+        .db-conditional .db-decision { color: var(--yellow); }
+        .db-reject     .db-decision { color: var(--red); }
+        .db-refer      .db-decision { color: var(--orange); }
+
+        .db-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 5px;
+        }
+
+        .risk-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.07em;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
+        .rb-low      { background: var(--green-dim);  color: var(--green);  border: 1px solid var(--green-border); }
+        .rb-medium   { background: var(--yellow-dim); color: var(--yellow); border: 1px solid var(--yellow-border);}
+        .rb-high     { background: var(--orange-dim); color: var(--orange); border: 1px solid var(--orange-border);}
+        .rb-critical { background: var(--red-dim);    color: var(--red);    border: 1px solid var(--red-border);   }
+
+        .fallback-note {
+            font-size: 10px;
+            color: var(--yellow);
+            font-family: 'JetBrains Mono', monospace;
+            opacity: 0.8;
+        }
+
+        /* ── Score bar ───────────────────────────────────── */
+        .score-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+            padding: 16px 18px;
+        }
+
+        .score-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 10px;
+        }
+
+        .score-lbl {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.09em;
+        }
+
+        .score-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+        }
+
+        .score-num em {
+            font-style: normal;
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--text-muted);
+        }
+
+        .bar-track {
+            height: 7px;
+            background: var(--surface-3);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .bar-ticks {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+        }
+
+        .bar-tick {
+            font-size: 10px;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* ── Card ────────────────────────────────────────── */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+            overflow: hidden;
+        }
+
+        .card-h {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-icon { font-size: 14px; }
+
+        .card-title {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+
+        .card-b { padding: 14px 16px; }
+
+        /* ── Flags ───────────────────────────────────────── */
+        .flags { display: flex; flex-direction: column; gap: 9px; }
+
+        .flag {
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .flag-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--yellow);
+            flex-shrink: 0;
+            margin-top: 7px;
+        }
+
+        /* ── Analysis text ───────────────────────────────── */
+        .analysis {
+            font-size: 13px;
+            line-height: 1.75;
+            color: var(--text-dim);
+        }
+
+        /* ── Policy refs ─────────────────────────────────── */
+        .policy-refs { display: flex; flex-wrap: wrap; gap: 6px; }
+
+        .pol-ref {
+            font-size: 11px;
+            font-family: 'JetBrains Mono', monospace;
+            padding: 4px 10px;
+            border-radius: var(--r-sm);
+            background: var(--accent-dim);
+            color: var(--accent);
+            border: 1px solid rgba(79,142,247,0.18);
+        }
+
+        /* ── Reasoning ───────────────────────────────────── */
+        .reasoning {
+            font-size: 13px;
+            line-height: 1.8;
+            color: var(--text);
+        }
+
+        /* ── Agents + meta ───────────────────────────────── */
+        .bottom-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .agents-row { display: flex; flex-wrap: wrap; gap: 7px; }
+
+        .agent-chip {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 11px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            background: var(--surface-2);
+            font-size: 11px;
+            font-weight: 500;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .agent-dot { width: 6px; height: 6px; border-radius: 50%; }
+        .ag-success { background: var(--green); }
+        .ag-failed  { background: var(--red); }
+        .ag-unknown { background: var(--text-muted); }
+
+        .meta-row { display: flex; flex-wrap: wrap; gap: 18px; }
+
+        .meta-item { display: flex; flex-direction: column; gap: 2px; }
+
+        .meta-lbl {
+            font-size: 9px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .meta-val {
+            font-size: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-dim);
+        }
+
+        /* ── Fallback warning bar ────────────────────────── */
+        .fallback-bar {
+            background: var(--yellow-dim);
+            border: 1px solid var(--yellow-border);
+            border-radius: var(--r-sm);
+            padding: 9px 14px;
+            font-size: 12px;
+            color: var(--yellow);
+            font-family: 'JetBrains Mono', monospace;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ── Error ───────────────────────────────────────── */
+        .error-box {
+            background: var(--red-dim);
+            border: 1px solid var(--red-border);
+            border-radius: var(--r);
+            padding: 16px 18px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .error-ico { font-size: 16px; flex-shrink: 0; }
+
+        .error-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--red);
+            margin-bottom: 4px;
+        }
+
+        .error-msg { font-size: 13px; color: var(--text-dim); line-height: 1.6; }
+
+        .error-detail {
+            margin-top: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .error-field {
+            font-size: 11px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-muted);
+        }
+
+        /* ── Responsive ──────────────────────────────────── */
+        @media (max-width: 860px) {
+            .main { grid-template-columns: 1fr; }
+            .panel-form { border-right: none; border-bottom: 1px solid var(--border); }
+        }
+
+        @media (max-width: 540px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .fg.full { grid-column: 1; }
+            .form-section { grid-column: 1; }
+            .header { padding: 0 16px; }
+            .form-body, .submit-wrap { padding-left: 16px; padding-right: 16px; }
+            .panel-head { padding-left: 16px; padding-right: 16px; }
+            .results { padding: 18px 16px; }
+            .loading-wrap { padding: 24px 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ── Header ──────────────────────────────────────────────────── -->
+<header class="header">
+    <div class="header-logo">🏦</div>
+    <span class="header-brand">Loan Analyst</span>
+    <div class="header-sep"></div>
+    <span class="header-sub">AI Credit Assessment</span>
+    <span class="header-pill">GROQ · LLaMA 3.3</span>
+</header>
+
+<!-- ── Main grid ───────────────────────────────────────────────── -->
+<main class="main">
+
+    <!-- ── LEFT: Form ──────────────────────────────────────────── -->
+    <section class="panel-form">
+        <div class="panel-head">
+            <span class="panel-label">Application</span>
+            <div class="presets">
+                <button class="preset-btn strong" onclick="fillPreset('strong')" title="Strong credit profile">✦ Strong</button>
+                <button class="preset-btn risky"  onclick="fillPreset('risky')"  title="High-risk profile">⚠ Risky</button>
+            </div>
+        </div>
+
+        <form id="appForm" onsubmit="handleSubmit(event)" class="form-body">
+            <div class="form-grid">
+
+                <!-- Applicant ────────────────── -->
+                <div class="form-section">Applicant</div>
+
+                <div class="fg full">
+                    <label for="applicant_name">Full Name</label>
+                    <input type="text" id="applicant_name" name="applicant_name"
+                           placeholder="e.g. Rahul Sharma" required>
+                </div>
+
+                <div class="fg">
+                    <label for="age">Age</label>
+                    <input type="number" id="age" name="age"
+                           placeholder="18 – 50" min="18" max="70" required>
+                </div>
+
+                <div class="fg">
+                    <label for="credit_score">Credit Score</label>
+                    <input type="number" id="credit_score" name="credit_score"
+                           placeholder="300 – 900" min="300" max="900" required>
+                </div>
+
+                <!-- Loan ─────────────────────── -->
+                <div class="form-section">Loan Details</div>
+
+                <div class="fg">
+                    <label for="annual_income">Annual Income (₹)</label>
+                    <input type="number" id="annual_income" name="annual_income"
+                           placeholder="e.g. 1200000" min="1" required>
+                </div>
+
+                <div class="fg">
+                    <label for="requested_loan_amount">Loan Amount (₹)</label>
+                    <input type="number" id="requested_loan_amount" name="requested_loan_amount"
+                           placeholder="e.g. 5000000" min="1" required>
+                </div>
+
+                <div class="fg">
+                    <label for="loan_purpose">Loan Purpose</label>
+                    <select id="loan_purpose" name="loan_purpose" required>
+                        <option value="">Select purpose</option>
+                        <option value="Home purchase">Home Purchase</option>
+                        <option value="Home renovation">Home Renovation</option>
+                        <option value="Vehicle">Vehicle</option>
+                        <option value="Education">Education</option>
+                        <option value="Business">Business</option>
+                        <option value="Personal">Personal</option>
+                        <option value="Medical">Medical</option>
+                    </select>
+                </div>
+
+                <div class="fg">
+                    <label for="existing_emis">Existing EMIs / Month (₹)</label>
+                    <input type="number" id="existing_emis" name="existing_emis"
+                           placeholder="e.g. 15000" min="0" required>
+                </div>
+
+                <!-- Employment ───────────────── -->
+                <div class="form-section">Employment</div>
+
+                <div class="fg">
+                    <label for="employment_type">Employment Type</label>
+                    <select id="employment_type" name="employment_type" required>
+                        <option value="">Select type</option>
+                        <option value="Salaried">Salaried</option>
+                        <option value="Self-Employed">Self-Employed</option>
+                        <option value="Business">Business</option>
+                        <option value="Freelance">Freelance</option>
+                    </select>
+                </div>
+
+                <div class="fg">
+                    <label for="employment_years">Years at Current Job</label>
+                    <input type="number" id="employment_years" name="employment_years"
+                           placeholder="e.g. 3.5" min="0" step="0.1" required>
+                </div>
+
+                <!-- Remarks ──────────────────── -->
+                <div class="form-section">Additional Info</div>
+
+                <div class="fg full">
+                    <label for="remarks">Remarks <span style="color:var(--text-muted);font-weight:400;">(optional)</span></label>
+                    <textarea id="remarks" name="remarks"
+                              placeholder="Any context about the applicant, purpose, or financial situation..."></textarea>
+                </div>
+
+            </div>
+        </form>
+
+        <div class="submit-wrap">
+            <button type="submit" form="appForm" class="submit-btn" id="submitBtn">
+                Analyse Application
+            </button>
+        </div>
+    </section>
+
+    <!-- ── RIGHT: Results ──────────────────────────────────────── -->
+    <section class="panel-results" id="resultsPanel">
+
+        <!-- Empty state -->
+        <div class="empty-state" id="emptyState">
+            <div class="empty-icon">📋</div>
+            <div class="empty-title">No analysis yet</div>
+            <div class="empty-desc">Fill in the application form and submit to get an AI-powered credit risk assessment.</div>
+        </div>
+
+        <!-- Loading state -->
+        <div id="loadingState" style="display:none;" class="loading-wrap">
+            <div class="loading-head">
+                <div class="loading-title">Running Analysis</div>
+                <div class="loading-elapsed" id="elapsed">0.0s</div>
+                <div class="loading-status" id="statusMsg">Initialising pipeline…</div>
+            </div>
+
+            <div class="pipeline">
+
+                <div class="p-step" id="ps-rag">
+                    <div class="p-ind" id="pi-rag">1</div>
+                    <div class="p-body">
+                        <div class="p-name">Policy Context</div>
+                        <div class="p-desc">Retrieving RBI guidelines from vector store</div>
+                    </div>
+                </div>
+
+                <div class="p-step" id="ps-agents">
+                    <div class="p-ind" id="pi-agents">2</div>
+                    <div class="p-body">
+                        <div class="p-name">
+                            Agent Analysis
+                            <span style="font-size:10px;color:var(--text-muted);font-family:'JetBrains Mono',monospace;font-weight:400;"> · parallel</span>
+                        </div>
+                        <div class="p-tags">
+                            <span class="p-tag">Credit Analysis</span>
+                            <span class="p-tag">Income Analysis</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-step" id="ps-fraud">
+                    <div class="p-ind" id="pi-fraud">3</div>
+                    <div class="p-body">
+                        <div class="p-name">Fraud Detection</div>
+                        <div class="p-desc">Scanning for inconsistencies and risk signals</div>
+                    </div>
+                </div>
+
+                <div class="p-step" id="ps-synth">
+                    <div class="p-ind" id="pi-synth">4</div>
+                    <div class="p-body">
+                        <div class="p-name">Risk Synthesis</div>
+                        <div class="p-desc">Generating structured decision and risk report</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Results output -->
+        <div id="resultsOut"></div>
+
+    </section>
+</main>
+
+<script>
+    const API_URL = "https://web-production-0ce95.up.railway.app";
+
+    /* ── Presets ──────────────────────────────────────────────────── */
+    const PRESETS = {
+        strong: {
+            applicant_name:        "Priya Mehta",
+            age:                   32,
+            annual_income:         1800000,
+            requested_loan_amount: 5000000,
+            loan_purpose:          "Home purchase",
+            credit_score:          780,
+            existing_emis:         12000,
+            employment_type:       "Salaried",
+            employment_years:      6,
+            remarks:               ""
+        },
+        risky: {
+            applicant_name:        "Aakash Verma",
+            age:                   29,
+            annual_income:         800000,
+            requested_loan_amount: 6000000,
+            loan_purpose:          "Business",
+            credit_score:          610,
+            existing_emis:         28000,
+            employment_type:       "Self-Employed",
+            employment_years:      0.25,
+            remarks:               "Changed jobs recently, have existing personal loan"
+        }
+    };
+
+    function fillPreset(type) {
+        const p = PRESETS[type];
+        Object.entries(p).forEach(([k, v]) => {
+            const el = document.getElementById(k);
+            if (el) el.value = v;
+        });
+    }
+
+    /* ── Pipeline animation ───────────────────────────────────────── */
+    let timerTick  = null;
+    let stageQueue = [];
+    let t0         = null;
+
+    const STAGES = [
+        { id: 'rag',    label: '✦', num: '1', msg: 'Fetching policy context from vector store…' },
+        { id: 'agents', label: '✦', num: '2', msg: 'Running credit & income analysis in parallel…' },
+        { id: 'fraud',  label: '✦', num: '3', msg: 'Scanning for fraud signals and inconsistencies…' },
+        { id: 'synth',  label: '✦', num: '4', msg: 'Synthesising final risk decision and report…' },
+    ];
+
+    const STAGE_DELAYS = [0, 2600, 12000, 21000];
+
+    function activateStage(id, msg) {
+        const step = document.getElementById('ps-' + id);
+        const ind  = document.getElementById('pi-' + id);
+        if (!step) return;
+        step.classList.add('active');
+        ind.textContent = '●';
+        document.getElementById('statusMsg').textContent = msg;
+    }
+
+    function completeStage(id) {
+        const step = document.getElementById('ps-' + id);
+        const ind  = document.getElementById('pi-' + id);
+        if (!step) return;
+        step.classList.remove('active');
+        step.classList.add('done');
+        ind.textContent = '✓';
+    }
+
+    function resetStages() {
+        const nums = { rag: '1', agents: '2', fraud: '3', synth: '4' };
+        STAGES.forEach(s => {
+            const step = document.getElementById('ps-' + s.id);
+            const ind  = document.getElementById('pi-' + s.id);
+            step.classList.remove('active', 'done');
+            ind.textContent = nums[s.id];
+        });
+    }
+
+    function startAnimation() {
+        t0 = Date.now();
+        timerTick = setInterval(() => {
+            document.getElementById('elapsed').textContent =
+                ((Date.now() - t0) / 1000).toFixed(1) + 's';
+        }, 100);
+
+        STAGES.forEach((s, i) => {
+            const tid = setTimeout(() => activateStage(s.id, s.msg), STAGE_DELAYS[i]);
+            stageQueue.push(tid);
+        });
+    }
+
+    function stopAnimation() {
+        clearInterval(timerTick);
+        stageQueue.forEach(clearTimeout);
+        stageQueue = [];
+        STAGES.forEach(s => completeStage(s.id));
+    }
+
+    /* ── Panel helpers ────────────────────────────────────────────── */
+    function showEmpty() {
+        document.getElementById('emptyState').style.display  = '';
+        document.getElementById('loadingState').style.display = 'none';
+        document.getElementById('resultsOut').innerHTML       = '';
+    }
+
+    function showLoading() {
+        document.getElementById('emptyState').style.display  = 'none';
+        document.getElementById('loadingState').style.display = '';
+        document.getElementById('resultsOut').innerHTML       = '';
+        document.getElementById('elapsed').textContent        = '0.0s';
+        document.getElementById('statusMsg').textContent      = 'Initialising pipeline…';
+        resetStages();
+    }
+
+    function showResults(html) {
+        document.getElementById('emptyState').style.display  = 'none';
+        document.getElementById('loadingState').style.display = 'none';
+        document.getElementById('resultsOut').innerHTML       = html;
+        if (window.innerWidth < 860) {
+            document.getElementById('resultsPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+
+    /* ── Helpers ──────────────────────────────────────────────────── */
+    function esc(s) {
+        if (!s) return '';
+        return String(s)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+
+    function inr(n) {
+        if (n == null) return 'N/A';
+        return '₹' + Number(n).toLocaleString('en-IN');
+    }
+
+    function decisionClass(d) {
+        return { APPROVE: 'db-approve', CONDITIONAL_APPROVE: 'db-conditional',
+                 REJECT: 'db-reject',   REFER_TO_UNDERWRITER: 'db-refer' }[d] || 'db-refer';
+    }
+
+    function decisionLabel(d) {
+        return { APPROVE: 'APPROVE', CONDITIONAL_APPROVE: 'CONDITIONAL APPROVE',
+                 REJECT: 'REJECT',   REFER_TO_UNDERWRITER: 'REFER TO UNDERWRITER' }[d] || (d || 'UNKNOWN');
+    }
+
+    function riskClass(lvl) {
+        return { LOW: 'rb-low', MEDIUM: 'rb-medium', HIGH: 'rb-high', CRITICAL: 'rb-critical' }[(lvl||'').toUpperCase()] || 'rb-medium';
+    }
+
+    function scoreColor(s) {
+        if (s <= 28) return 'var(--green)';
+        if (s <= 52) return 'var(--yellow)';
+        if (s <= 74) return 'var(--orange)';
+        return 'var(--red)';
+    }
+
+    function agentDot(status) {
+        return { success: 'ag-success', failed: 'ag-failed' }[status] || 'ag-unknown';
+    }
+
+    /* ── Render report ────────────────────────────────────────────── */
+    function renderReport(data) {
+        const r  = data.report  || {};
+        const ag = data.agents  || {};
+
+        const flagsHtml = (r.flags && r.flags.length)
+            ? r.flags.map(f => `<div class="flag"><div class="flag-dot"></div><span>${esc(f)}</span></div>`).join('')
+            : '<span style="font-size:13px;color:var(--text-muted);">No flags raised.</span>';
+
+        const policyHtml = (r.policy_references && r.policy_references.length)
+            ? r.policy_references.map(p => `<span class="pol-ref">${esc(p)}</span>`).join('')
+            : '<span style="font-size:12px;color:var(--text-muted);">No specific references cited.</span>';
+
+        const agentsHtml = ['credit','income','fraud'].map(name => `
+            <div class="agent-chip">
+                <div class="agent-dot ${agentDot(ag[name])}"></div>
+                ${name}
+            </div>`).join('');
+
+        const ms  = r.processing_time_ms;
+        const sec = ms != null ? (ms / 1000).toFixed(1) + 's' : 'N/A';
+
+        const fallbackHtml = r.fallback_used
+            ? `<div class="fallback-bar">⚠ Partial data — one or more agents had errors. Manual review recommended.</div>`
+            : '';
+
+        const errHtml = (data.error_log && data.error_log.length)
+            ? `<div class="card">
+                   <div class="card-h"><span class="card-icon">⚠</span><span class="card-title">Error Log</span></div>
+                   <div class="card-b" style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--yellow);white-space:pre-wrap;">${esc(data.error_log.join('\n'))}</div>
+               </div>`
+            : '';
+
+        return `<div class="results">
+
+${fallbackHtml}
+
+<div class="decision-banner ${decisionClass(r.decision)}">
+    <div class="db-left">
+        <div class="db-sublabel">Decision</div>
+        <div class="db-decision">${decisionLabel(r.decision)}</div>
+    </div>
+    <div class="db-right">
+        <span class="risk-badge ${riskClass(r.risk_level)}">${r.risk_level || 'N/A'}</span>
+        ${r.fallback_used ? '<span class="fallback-note">⚠ partial data</span>' : ''}
+    </div>
+</div>
+
+<div class="score-card">
+    <div class="score-row">
+        <span class="score-lbl">Risk Score</span>
+        <span class="score-num">${r.risk_score != null ? r.risk_score : '—'}<em>/100</em></span>
+    </div>
+    <div class="bar-track">
+        <div class="bar-fill" id="barFill" style="background:${scoreColor(r.risk_score || 0)};"></div>
+    </div>
+    <div class="bar-ticks">
+        <span class="bar-tick">0 — Low Risk</span>
+        <span class="bar-tick">50</span>
+        <span class="bar-tick">100 — Critical</span>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-h"><span class="card-icon">🚩</span><span class="card-title">Risk Flags</span></div>
+    <div class="card-b"><div class="flags">${flagsHtml}</div></div>
+</div>
+
+<div class="card">
+    <div class="card-h"><span class="card-icon">📈</span><span class="card-title">Credit Analysis</span></div>
+    <div class="card-b"><div class="analysis">${esc(r.credit_analysis)}</div></div>
+</div>
+
+<div class="card">
+    <div class="card-h"><span class="card-icon">💰</span><span class="card-title">Income Analysis</span></div>
+    <div class="card-b"><div class="analysis">${esc(r.income_analysis)}</div></div>
+</div>
+
+<div class="card">
+    <div class="card-h"><span class="card-icon">🔍</span><span class="card-title">Fraud Signals</span></div>
+    <div class="card-b"><div class="analysis">${esc(r.fraud_signals)}</div></div>
+</div>
+
+<div class="card">
+    <div class="card-h"><span class="card-icon">📜</span><span class="card-title">Policy References</span></div>
+    <div class="card-b"><div class="policy-refs">${policyHtml}</div></div>
+</div>
+
+<div class="card">
+    <div class="card-h"><span class="card-icon">🧠</span><span class="card-title">Final Reasoning</span></div>
+    <div class="card-b"><div class="reasoning">${esc(r.reasoning)}</div></div>
+</div>
+
+${errHtml}
+
+<div class="bottom-wrap">
+    <div class="agents-row">${agentsHtml}</div>
+    <div class="meta-row">
+        <div class="meta-item">
+            <span class="meta-lbl">Processing</span>
+            <span class="meta-val">${sec}</span>
+        </div>
+        <div class="meta-item">
+            <span class="meta-lbl">Agents completed</span>
+            <span class="meta-val">${r.agents_completed != null ? r.agents_completed : '—'}/3</span>
+        </div>
+        <div class="meta-item">
+            <span class="meta-lbl">Status</span>
+            <span class="meta-val">${esc(data.status) || '—'}</span>
+        </div>
+        <div class="meta-item">
+            <span class="meta-lbl">Model</span>
+            <span class="meta-val">llama-3.3-70b</span>
+        </div>
+    </div>
+</div>
+
+</div>`;
+    }
+
+    /* ── Submit ───────────────────────────────────────────────────── */
+    async function handleSubmit(e) {
+        e.preventDefault();
+
+        const btn = document.getElementById('submitBtn');
+        const fd  = new FormData(e.target);
+
+        const payload = {
+            applicant_name:        fd.get('applicant_name'),
+            age:                   parseInt(fd.get('age')),
+            annual_income:         parseFloat(fd.get('annual_income')),
+            requested_loan_amount: parseFloat(fd.get('requested_loan_amount')),
+            loan_purpose:          fd.get('loan_purpose'),
+            credit_score:          parseInt(fd.get('credit_score')),
+            existing_emis:         parseFloat(fd.get('existing_emis')),
+            employment_type:       fd.get('employment_type'),
+            employment_years:      parseFloat(fd.get('employment_years')),
+            remarks:               fd.get('remarks') || null,
+        };
+
+        btn.disabled    = true;
+        btn.textContent = 'Analysing…';
+        showLoading();
+        startAnimation();
+
+        try {
+            const res  = await fetch(`${API_URL}/analyse`, {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify(payload),
+            });
+
+            stopAnimation();
+            const data = await res.json();
+
+            if (!res.ok) {
+                const details = data.details
+                    ? `<div class="error-detail">${data.details.map(d =>
+                          `<span class="error-field">${esc(d.field)}: ${esc(d.message)}</span>`
+                      ).join('')}</div>`
+                    : '';
+                showResults(`<div class="results"><div class="error-box">
+                    <div class="error-ico">⚠</div>
+                    <div>
+                        <div class="error-title">Analysis Failed (HTTP ${res.status})</div>
+                        <div class="error-msg">${esc(data.error || JSON.stringify(data))}</div>
+                        ${details}
+                    </div>
+                </div></div>`);
+            } else {
+                showResults(renderReport(data));
+                // Animate the bar after DOM is painted
+                requestAnimationFrame(() => requestAnimationFrame(() => {
+                    const bar = document.getElementById('barFill');
+                    if (bar && data.report) bar.style.width = (data.report.risk_score || 0) + '%';
+                }));
+            }
+
+        } catch (err) {
+            stopAnimation();
+            showResults(`<div class="results"><div class="error-box">
+                <div class="error-ico">⚠</div>
+                <div>
+                    <div class="error-title">Network Error</div>
+                    <div class="error-msg">${esc(err.message)}</div>
+                    <div style="margin-top:6px;font-size:12px;color:var(--text-muted);">
+                        Ensure the API is online and CORS is allowed.
+                    </div>
+                </div>
+            </div></div>`);
+        } finally {
+            btn.disabled    = false;
+            btn.textContent = 'Analyse Application';
+        }
+    }
+</script>
+
+</body>
+</html>
