@@ -3,7 +3,7 @@ langchain-groq
 langchain-core
 langchain-community
 langgraph
-langfuse
+langfuse>=2.0.0,<3.0.0
 chromadb
 sentence-transformers
 django
